@@ -7,7 +7,7 @@ import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
-import {auth} from "./components/firebase/firebase.utils"; //we want to store the user login email and password in app because we want to pass it to components later
+import {auth, createUserProfileDocument} from "./components/firebase/firebase.utils"; //we want to store the user login email and password in app because we want to pass it to components later
 
 
 
@@ -28,10 +28,26 @@ import {auth} from "./components/firebase/firebase.utils"; //we want to store th
     unsubscribeFromAuth = null;
 
     componentDidMount(){
-        this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {     //parameter is user state
-            this.setState({currentUser:user});
+        this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {     //parameter is user state
+            if (userAuth) {   //we check if a user is actually sign in
+                const userRef = await createUserProfileDocument(userAuth); //we need to use it to check if our database has updated the reference with any new data
 
-            console.log(user)
+                userRef.onSnapshot(snapshot => {
+                    this.setState({
+                        currentUser:{
+                            id: snapshot.id,
+                                ...snapshot.data()
+                        }
+                    // },() => {
+                        // console.log(this.state)
+                    })
+
+                });
+            }
+            //if the user off object comes back and it's null, go below
+            else {
+                this.setState({currentUser: userAuth})  //if there is no document we will create a new object
+            }
         })
     }
 

@@ -14,13 +14,42 @@ const config = {
 
 firebase.initializeApp(config);
 
+//the below function is used to check if the anthenticated sign in user is already store in the database(firebase) or not
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+    if (!userAuth) return;
+
+    // console.log(firestore.doc(`users/skdnsnlkgsk`));
+    const userRef = firestore.doc(`users/${userAuth.uid}`);
+
+    const snapShot = await userRef.get();
+    console.log(snapShot);
+
+    if (!snapShot.exists) {
+        const { displayName, email } = userAuth;
+        const createdAt = new Date();
+        try {
+            await userRef.set({
+                displayName,
+                email,
+                createdAt,
+                ...additionalData
+            });
+        } catch (error) {
+            console.log('error creating user', error.message);
+        }
+    }
+
+    return userRef;
+};
+
+
 //below is all about google authentication function:
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
 const provider = new firebase.auth.GoogleAuthProvider();
-provider.setCustomParameters({promp:'select_account'});
+provider.setCustomParameters({ prompt: 'select_account' });
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
-export default firebase
+export default firebase;
