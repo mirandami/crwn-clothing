@@ -1,5 +1,6 @@
 import React from 'react';
 import {Switch, Route} from 'react-router-dom';
+import {connect} from "react-redux";
 
 import './App.css';
 
@@ -8,7 +9,7 @@ import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import {auth, createUserProfileDocument} from "./components/firebase/firebase.utils"; //we want to store the user login email and password in app because we want to pass it to components later
-
+import {setCurrentUser} from "./redux/user/user.action";
 
 
 // const HatsPage = () => (
@@ -17,23 +18,20 @@ import {auth, createUserProfileDocument} from "./components/firebase/firebase.ut
 //     </div>
 // );
  class App extends React.Component {
-    constructor() {
-        super();
 
-        this.state = {
-            currentUser: null,
-        }
-    }
 
     unsubscribeFromAuth = null;
 
     componentDidMount(){
+        const {setCurrentUser} = this.props;
+
+
         this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {     //parameter is user state
             if (userAuth) {   //we check if a user is actually sign in
                 const userRef = await createUserProfileDocument(userAuth); //we need to use it to check if our database has updated the reference with any new data
 
                 userRef.onSnapshot(snapshot => {
-                    this.setState({
+                    setCurrentUser({
                         currentUser:{
                             id: snapshot.id,
                                 ...snapshot.data()
@@ -46,7 +44,7 @@ import {auth, createUserProfileDocument} from "./components/firebase/firebase.ut
             }
             //if the user off object comes back and it's null, go below
             else {
-                this.setState({currentUser: userAuth})  //if there is no document we will create a new object
+                setCurrentUser(userAuth)  //if there is no document we will create a new object
             }
         })
     }
@@ -59,7 +57,7 @@ import {auth, createUserProfileDocument} from "./components/firebase/firebase.ut
      render() {
         return (
             <div>
-                <Header currentUser = {this.state.currentUser}></Header>
+                <Header></Header>
                 <Switch>
                     <Route exact path ='/' component={HomePage}/>
                     {/*extact 表明当path刚好为local：3000的时候运行homepage，如果没有exact只要path带有local 3000就会运行homepage*/}
@@ -72,4 +70,8 @@ import {auth, createUserProfileDocument} from "./components/firebase/firebase.ut
     }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => ({
+    setCurrentUser: user => dispatch(setCurrentUser(user))
+});
+
+export default connect(null, mapDispatchToProps)(App);

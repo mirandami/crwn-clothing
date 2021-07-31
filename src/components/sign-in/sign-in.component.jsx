@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 import './sign-in.styles.scss';
 import FormInput from "../form-input/form-input.component";
@@ -60,7 +60,7 @@ class SignIn extends React.Component{
                         <div className='button'>
                             <CustomButton type='submit' > SIGN IN</CustomButton>
                             {/*input and button both have the type submit, so they both work since the onSubmit function been called*/}
-                            <CustomButton onClick = {signInWithGoogle} isGoogleSignIn> SIGN IN WITH GOOGLE</CustomButton>
+                            <CustomButton onClick = {signInWithGoogle} isGoogleSignIn type="button"> SIGN IN WITH GOOGLE</CustomButton>
                         </div>
 
                 </form>
