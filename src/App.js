@@ -1,6 +1,7 @@
 import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import {connect} from "react-redux";
+import {createStructuredSelector} from "reselect";
 
 import './App.css';
 
@@ -8,8 +9,10 @@ import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
+import CheckoutPage from "./pages/checkout/checkout.component";
 import {auth, createUserProfileDocument} from "./components/firebase/firebase.utils"; //we want to store the user login email and password in app because we want to pass it to components later
 import {setCurrentUser} from "./redux/user/user.action";
+import {selectCurrentUser} from "./redux/user/user.selectors";
 
 
 // const HatsPage = () => (
@@ -62,7 +65,9 @@ import {setCurrentUser} from "./redux/user/user.action";
                     <Route exact path ='/' component={HomePage}/>
                     {/*extact 表明当path刚好为local：3000的时候运行homepage，如果没有exact只要path带有local 3000就会运行homepage*/}
                     <Route path='/shop' component={ShopPage}></Route>
-                    <Route exact path='/signin' render={() => this.props.currentUser ? (
+                    <Route exact path='/checkout' component={CheckoutPage}></Route>
+                    <Route
+                        exact path='/signin' render={() => this.props.currentUser ? (
                         <Redirect to= '/'/>
                         ) : (
                             <SignInAndSignUpPage/>
@@ -75,8 +80,8 @@ import {setCurrentUser} from "./redux/user/user.action";
     }
 }
 
-const mapStateToProps = ({user}) => ({
-    currentUser: user.currentUser
+const mapStateToProps = createStructuredSelector({
+    currentUser: selectCurrentUser
 });
 
 const mapDispatchToProps = dispatch => ({
