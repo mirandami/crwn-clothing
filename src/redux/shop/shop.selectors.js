@@ -17,9 +17,9 @@ export const selectCollections = createSelector(
 
 export const selectCollectionsForPreview = createSelector(
     [selectCollections],
-    collections => Object.keys(collections).map(key => collections[key])
+    collections => collections ? Object.keys(collections).map(key => collections[key]) : []
     //gets us all of the key of the object that we pass into it, and give us an array format
-)
+);
 
 // export const selectCollection = collectionUrlParam =>
 //     createSelector(
@@ -32,5 +32,5 @@ export const selectCollectionsForPreview = createSelector(
 export const selectCollection = collectionUrlParam =>
     createSelector(
         [selectCollections],
-        collections => collections[collectionUrlParam]
+        collections => (collections ? collections[collectionUrlParam] : null)
     );

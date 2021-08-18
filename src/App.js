@@ -13,6 +13,7 @@ import CheckoutPage from "./pages/checkout/checkout.component";
 import {auth, createUserProfileDocument} from "./components/firebase/firebase.utils"; //we want to store the user login email and password in app because we want to pass it to components later
 import {setCurrentUser} from "./redux/user/user.action";
 import {selectCurrentUser} from "./redux/user/user.selectors";
+import {selectCollectionsForPreview} from "./redux/shop/shop.selectors";
 
 
 // const HatsPage = () => (
@@ -28,7 +29,7 @@ import {selectCurrentUser} from "./redux/user/user.selectors";
     componentDidMount(){
         const {setCurrentUser} = this.props;
 
-
+        //observable listener
         this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {     //parameter is user state
             if (userAuth) {   //we check if a user is actually sign in
                 const userRef = await createUserProfileDocument(userAuth); //we need to use it to check if our database has updated the reference with any new data
@@ -47,7 +48,8 @@ import {selectCurrentUser} from "./redux/user/user.selectors";
             }
             //if the user off object comes back and it's null, go below
             else {
-                setCurrentUser(userAuth)  //if there is no document we will create a new object
+                setCurrentUser(userAuth); //if there is no document we will create a new object
+                // addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({title, items})));
             }
         })
     }
@@ -81,11 +83,13 @@ import {selectCurrentUser} from "./redux/user/user.selectors";
 }
 
 const mapStateToProps = createStructuredSelector({
-    currentUser: selectCurrentUser
+    currentUser: selectCurrentUser,
+    // collectionsArray: selectCollectionsForPreview,
 });
 
 const mapDispatchToProps = dispatch => ({
-    setCurrentUser: user => dispatch(setCurrentUser(user))
+    setCurrentUser: user => dispatch(setCurrentUser(user)),
+
 });
 
 export default connect(
